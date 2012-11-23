@@ -1,5 +1,10 @@
 /*
-  Description of what code does
+ Lucidpi
+ UDP/IP server 
+ Receives a packet containing pixel data and writes it to a Nokia 3310/5110
+ or similar LCD.
+
+ Based on code from http://www.ibm.com/developerworks/linux/tutorials/l-sock2/
 */
 #include <wiringPi.h>
 
@@ -25,8 +30,8 @@ int main(int argc, char *argv[])
 {
   uint16_t i; 
   int sock;
-  struct sockaddr_in echoserver;
-  struct sockaddr_in echoclient;
+  struct sockaddr_in server;
+  struct sockaddr_in client;
   char buffer[BUFFSIZE];
   unsigned int clientlen, serverlen;
   int received = 0;
@@ -41,13 +46,13 @@ int main(int argc, char *argv[])
     Die("Failed to create socket");
   }
   /* Construct the server sockaddr_in structure */
-  memset(&echoserver, 0, sizeof(echoserver));       /* Clear struct */
-  echoserver.sin_family = AF_INET;                  /* Internet/IP */
-  echoserver.sin_addr.s_addr = htonl(INADDR_ANY);   /* Any IP address */
-  echoserver.sin_port = htons(atoi(argv[1]));       /* server port */
+  memset(&server, 0, sizeof(server));       /* Clear struct */
+  server.sin_family = AF_INET;                  /* Internet/IP */
+  server.sin_addr.s_addr = htonl(INADDR_ANY);   /* Any IP address */
+  server.sin_port = htons(atoi(argv[1]));       /* server port */
   /* Bind the socket */
-  serverlen = sizeof(echoserver);
-  if (bind(sock, (struct sockaddr *) &echoserver, serverlen) < 0) {
+  serverlen = sizeof(server);
+  if (bind(sock, (struct sockaddr *) &server, serverlen) < 0) {
     Die("Failed to bind server socket");
   }
 
@@ -69,15 +74,11 @@ int main(int argc, char *argv[])
 
   while(1) {
     /* Receive a message from the client */
-    clientlen = sizeof(echoclient);
-    if ((received = recvfrom(sock, buffer, BUFFSIZE, 0, (struct sockaddr *) &echoclient, &clientlen)) < 0) {
+    clientlen = sizeof(client);
+    if ((received = recvfrom(sock, buffer, BUFFSIZE, 0, (struct sockaddr *) &client, &clientlen)) < 0) {
        Die("Failed to receive message");
     }
-    fprintf(stderr, "Client connected: %s\n", inet_ntoa(echoclient.sin_addr));
-    /* Send the message back to client */
-    /*if (sendto(sock, buffer, received, 0, (struct sockaddr *) &echoclient, sizeof(echoclient)) != received) {
-      Die("Mismatch in number of echo'd bytes");
-    }*/
+    fprintf(stderr, "Client connected: %s\n", inet_ntoa(client.sin_addr));
     nokialcd_home();
     for(i=0; i<BUFFSIZE; i++) {
       nokialcd_write_data(buffer[i]);
@@ -86,8 +87,3 @@ int main(int argc, char *argv[])
   }
   return 0;
 }
-/*  
-  nokialcd_write_command(NOKIALCD_ALLON);
-  nokialcd_write_command(NOKIALCD_BLANK);
-  nokialcd_write_command(NOKIALCD_NORMAL);
-*/
