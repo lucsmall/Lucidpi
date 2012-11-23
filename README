@@ -1,0 +1,15 @@
+Lucidpi
+-------
+
+This project contains:
+* a UDP server that listens for packets of pixel data and puts the data to a Nokia 3310 or 5110 LCD or other LCD using the  PCD8544 chipset. (Written in c)
+* a UDP client that sends a packet of pixel data to a listening server. (Written in Ruby)
+* a dummy server that listens for packets of pixel data and writes them to the console. Useful for testing clients in the absence of the LCD hardware. (Written in Ruby)
+
+The project requires:
+* a Raspberry Pi
+* the WiringPi GPIO wrapper library (https://projects.drogon.net/raspberry-pi/wiringpi/)
+* Nokia 3310 or similar LCD interfaced to the Raspberry Pi GPIO ports
+
+Created by Luc Small on 23 November 2012
+
