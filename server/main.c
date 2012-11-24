@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
     Replace with ...Gpio to avoid need for exporting. This requires root privs to run.
   */
   
-  if (wiringPiSetup() == -1) {
+  if (wiringPiSetupGpio() == -1) {
     return 1;
   }
 
