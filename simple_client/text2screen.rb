@@ -7,13 +7,14 @@ screen_size  = ScreenWidth * ScreenHeight
 screen_bytes = screen_size / 8
 
 char_display = [
-  "0123456789abcd",
-  "0123456789abcd",
-  "0123456789abcd",
-  "0123456789abcd",
-  "0123456789abcd",
-  "0123456789abcd"
+  " Interfaces:  ",
+  "              ",
+  "              ",
+  "              ",
+  "              ",
+  "              ",
 ]
+
 
 def put_char(data, char, x, y)
   FontTable[char-0x20].each_with_index do |b, x2|
@@ -24,6 +25,9 @@ def put_char(data, char, x, y)
   #puts
 end
 
+`/bin/hostname -I`.chomp.split(" ").each_with_index do |ip, i|
+	char_display[i+2] = ip
+end
 
 data = Array.new(screen_bytes, 0)
 char_display.each_with_index do |line, y|
